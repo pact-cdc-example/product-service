@@ -1,0 +1,9 @@
+postgres:
+  username: "pact-cdc"
+  password: "pact-cdc"
+  dbName: "pact-cdc"
+  host: "localhost"
+  port: "5435"
+
+server:
+  port: "9001"

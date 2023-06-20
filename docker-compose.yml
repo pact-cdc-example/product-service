@@ -1,0 +1,14 @@
+version: '3'
+services:
+  postgres-db:
+    image: postgres:latest
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_DB: "pact-cdc"
+      POSTGRES_USER: "pact-cdc"
+      POSTGRES_PASSWORD: "pact-cdc"
+    volumes:
+      - postgres-product:/var/lib/postgresql/data
+volumes:
+  postgres-product:
