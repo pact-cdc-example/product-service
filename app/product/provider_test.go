@@ -94,7 +94,6 @@ func (s *ProviderTestSuite) SetupSuite() {
 		productHandler,
 	})
 
-	//err = createProductTableOnDB(postgreDB)
 	s.Nil(err)
 
 	go func() {
@@ -103,10 +102,10 @@ func (s *ProviderTestSuite) SetupSuite() {
 		}
 	}()
 
-	_ = os.Setenv("CONSUMER_NAME", "StockService")
+	_ = os.Setenv("CONSUMER_NAME", "BasketService")
 	_ = os.Setenv("CONSUMER_TAG", "dev")
 	_ = os.Setenv("GIT_SHORT_HASH", uuid.New().String())
-	_ = os.Setenv("CONSUMER_VERSION", "0.0.3")
+	_ = os.Setenv("CONSUMER_VERSION", "0.0.1")
 	_ = os.Setenv("PACT_BROKER_BASE_URL", pactBrokerLocalURL)
 
 	s.pactSettings = &PactSettings{
@@ -122,7 +121,7 @@ func (s *ProviderTestSuite) SetupSuite() {
 	time.Sleep(3 * time.Second)
 }
 
-func (s *ProviderTestSuite) TestBasketProvider() {
+func (s *ProviderTestSuite) TestProvider() {
 	pact := &dsl.Pact{
 		Host:                     s.pactSettings.Host,
 		Provider:                 s.pactSettings.ProviderName,
@@ -147,7 +146,6 @@ func (s *ProviderTestSuite) TestBasketProvider() {
 			"i get product with given id": s.iGetProductWithGivenIDStateHandler,
 			"i get product not found error when the product with given id does not exists": s.iGetProductNotFoundErrorWhenTheProductWithGivenIDDoesNotExistsStateHandler,
 
-			//  /products/bulk endpoints provider states
 			"i get body parser error when no product id is given":                                 s.iGetBodyParserErrorWhenNoProductIDIsGivenStateHandler,
 			"i get product not found error when the one of product with given id does not exists": s.iGetProductNotFoundErrorWhenTheOneOfProductWithGivenIDDoesNotExistsStateHandler,
 			/*	"i get products with given ids":                                                       s.iGetProductsWithGivenIDsStateHandler,*/

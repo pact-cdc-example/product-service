@@ -1,8 +1,6 @@
 package product
 
 import (
-	"fmt"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/pact-cdc-example/product-service/pkg/cerr"
 	"github.com/sirupsen/logrus"
@@ -67,11 +65,9 @@ func (h *handler) GetProductByID(c *fiber.Ctx) error {
 
 func (h *handler) GetProductsByIDs(c *fiber.Ctx) error {
 	h.logger.Infof("Get Product By IDs request arrived!")
-	bdy := c.Body()
+
 	var req GetProductsByIDsRequest
-	fmt.Printf("Body: %s\n", string(bdy))
 	if err := c.BodyParser(&req); err != nil {
-		fmt.Println("error", err)
 		return c.Status(fiber.StatusBadRequest).JSON(cerr.BodyParser())
 	}
 
