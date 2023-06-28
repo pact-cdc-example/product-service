@@ -48,4 +48,5 @@ jobs:
             PROVIDER_BRANCH: ${{ env.BRANCH_NAME }}
             PACT_BROKER_BASE_URL: $BROKER_URL
             PACT_BROKER_TOKEN: $BROKER_TOKEN
+            PROVIDER_VERSION: ${{ github.event.inputs.providerVersion }}
         run: echo ${{ github.event.inputs.message }} && go clean -testcache && go test -tags=provider ./app/... -v

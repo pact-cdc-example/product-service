@@ -140,7 +140,7 @@ func (s *ProviderTestSuite) TestProvider() {
 
 	verifyRequest := types.VerifyRequest{
 		ProviderBaseURL:            providerBaseURL,
-		ProviderBranch:             s.pactSettings.ProviderVersion,
+		ProviderBranch:             s.pactSettings.ProviderBranch,
 		PactURLs:                   []string{s.pactSettings.getPactURL()},
 		BrokerURL:                  s.pactSettings.BrokerBaseURL,
 		Tags:                       strings.Split(s.pactSettings.ConsumerTags, ","),
