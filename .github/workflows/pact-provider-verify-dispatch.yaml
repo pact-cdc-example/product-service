@@ -1,0 +1,12 @@
+name: Pact Provider Verify
+
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: Random Name
+        required: true
+      home:
+        description: Random Home
+        required: true
+
