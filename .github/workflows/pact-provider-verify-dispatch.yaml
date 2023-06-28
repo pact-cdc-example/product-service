@@ -3,17 +3,47 @@ name: Pact Provider Verify
 on:
   workflow_dispatch:
     inputs:
-      name:
-        description: Random Name
+      pactURL:
+        description: URL Of The Pact.
         required: true
-      home:
-        description: Random Home
+      consumerVersion:
+        description: Version of the consumer
+        required: true
+      consumerName:
+        description: Name of the consumer
+        required: true
+      consumerTags:
+        description: Tags of the consumer
+        required: true
+      providerVersion:
+        description: Version of the provider
+        required: true
+      message:
+        description: Message to print to the console.
         required: true
 
-
+env:
+    GH_ACCESS_TOKEN: ${{ secrets.GH_TOKEN }}
+    PACTICIPANT: ${{ secrets.PACTICIPANT_NAME }}
+    PROVIDER_VERSION: ${{ github.sha }}
+    BROKER_URL: ${{ secrets.PACT_BROKER_BASE_URL }}
+    BROKER_TOKEN: ${{ secrets.PACT_BROKER_TOKEN }}
 jobs:
   verify-contract-requiring-verification:
     runs-on: ubuntu-latest
     steps:
-      - name: Print Inputs
-        run: echo ${{ github.event.inputs.name }} && echo ${{ github.event.inputs.home }}
+      - uses: actions/checkout@v2
+
+      - name: Get branch name and save to env
+        run: echo "BRANCH_NAME="${GITHUB_REF##*/}" >> $GITHUB_ENV
+
+      - name: Print branch name
+        run: echo ${{ env.BRANCH_NAME }}
+
+      - name: Verify Pact
+        env:
+            PACT_URL: ${{ github.event.inputs.pactURL }}
+            CONSUMER_VERSION: ${{ github.event.inputs.consumerVersion }}
+            CONSUMER_NAME: ${{ github.event.inputs.consumerName }}
+            CONSUMER_TAG: ${{ github.event.inputs.consumerTag }}
+        run: go clean -testcache && go test -tags=provider ./app/... -v

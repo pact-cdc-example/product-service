@@ -61,7 +61,7 @@ func (pr *postgresRepository) GetProductByID(
 		&p.Creator,
 		&p.Distributor,
 	); err != nil {
-		pr.logger.Error("could not scan product :%v", err)
+		pr.logger.Errorf("could not scan product :%v", err)
 		return nil, err
 	}
 
@@ -110,7 +110,7 @@ func (pr *postgresRepository) CreateProduct(
 	var updatedAt time.Time
 
 	if err := row.Scan(&createdAt, &updatedAt); err != nil {
-		pr.logger.Error("could not get created product :%v", err)
+		pr.logger.Errorf("could not get created product :%v", err)
 		return nil, err
 	}
 

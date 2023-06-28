@@ -1,3 +1,5 @@
+//go:build provider
+
 package product_test
 
 import (
@@ -15,7 +17,6 @@ import (
 	"time"
 
 	"github.com/golang/mock/gomock"
-	"github.com/google/uuid"
 	"github.com/pact-foundation/pact-go/dsl"
 	"github.com/pact-foundation/pact-go/types"
 	"github.com/pact-foundation/pact-go/utils"
@@ -34,6 +35,7 @@ type PactSettings struct {
 	BrokerBaseURL   string
 	BrokerUsername  string // Basic authentication
 	BrokerPassword  string // Basic authentication
+	BrokerToken     string
 	ConsumerName    string
 	ConsumerVersion string // a git sha, semantic version number
 	ConsumerTag     string // dev, staging, prod
@@ -101,21 +103,26 @@ func (s *ProviderTestSuite) SetupSuite() {
 			fmt.Println("serverErr", serverErr)
 		}
 	}()
+	//
+	//_ = os.Setenv("CONSUMER_NAME", "BasketService")
+	//_ = os.Setenv("CONSUMER_TAG", "dev")
+	//_ = os.Setenv("GIT_SHORT_HASH", uuid.New().String())
+	//_ = os.Setenv("CONSUMER_VERSION", "0.0.1")
 
-	_ = os.Setenv("CONSUMER_NAME", "BasketService")
-	_ = os.Setenv("CONSUMER_TAG", "dev")
-	_ = os.Setenv("GIT_SHORT_HASH", uuid.New().String())
-	_ = os.Setenv("CONSUMER_VERSION", "0.0.1")
-	_ = os.Setenv("PACT_BROKER_BASE_URL", pactBrokerLocalURL)
+	pactBrokerBaseURL := pactBrokerLocalURL
+	if os.Getenv("CI") == "true" {
+		pactBrokerBaseURL = os.Getenv("PACT_BROKER_BASE_URL")
+	}
 
 	s.pactSettings = &PactSettings{
 		Host:            "localhost",
 		ProviderName:    "ProductService",
 		ConsumerName:    os.Getenv("CONSUMER_NAME"),
 		ConsumerVersion: os.Getenv("CONSUMER_VERSION"),
-		BrokerBaseURL:   os.Getenv("PACT_BROKER_BASE_URL"),
+		BrokerBaseURL:   pactBrokerBaseURL,
 		ConsumerTag:     os.Getenv("CONSUMER_TAG"),
-		ProviderVersion: os.Getenv("GIT_SHORT_HASH"),
+		ProviderVersion: os.Getenv("PROVIDER_VERSION"),
+		BrokerToken:     os.Getenv("PACT_BROKER_TOKEN"),
 	}
 
 	time.Sleep(3 * time.Second)
@@ -138,11 +145,11 @@ func (s *ProviderTestSuite) TestProvider() {
 		Tags:                       []string{s.pactSettings.ConsumerTag},
 		BrokerUsername:             s.pactSettings.BrokerUsername,
 		BrokerPassword:             s.pactSettings.BrokerPassword,
+		BrokerToken:                s.pactSettings.BrokerToken,
 		FailIfNoPactsFound:         true,
 		PublishVerificationResults: true,
 		ProviderVersion:            s.pactSettings.ProviderVersion,
 		StateHandlers: map[string]types.StateHandler{
-			// /products/{id} endpoints provider states
 			"i get product with given id": s.iGetProductWithGivenIDStateHandler,
 			"i get product not found error when the product with given id does not exists": s.iGetProductNotFoundErrorWhenTheProductWithGivenIDDoesNotExistsStateHandler,
 
