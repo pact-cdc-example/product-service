@@ -10,3 +10,10 @@ on:
         description: Random Home
         required: true
 
+
+jobs:
+  verify-contract-requiring-verification:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Inputs
+        run: echo ${{ github.event.inputs.name }} && echo ${{ github.event.inputs.home }}
