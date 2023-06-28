@@ -24,7 +24,6 @@ on:
 
 env:
     GH_ACCESS_TOKEN: ${{ secrets.GH_TOKEN }}
-    PACTICIPANT: ${{ secrets.PACTICIPANT_NAME }}
     PROVIDER_VERSION: ${{ github.sha }}
     BROKER_URL: ${{ secrets.PACT_BROKER_BASE_URL }}
     BROKER_TOKEN: ${{ secrets.PACT_BROKER_TOKEN }}
@@ -45,5 +44,8 @@ jobs:
             PACT_URL: ${{ github.event.inputs.pactURL }}
             CONSUMER_VERSION: ${{ github.event.inputs.consumerVersion }}
             CONSUMER_NAME: ${{ github.event.inputs.consumerName }}
-            CONSUMER_TAG: ${{ github.event.inputs.consumerTag }}
-        run: go clean -testcache && go test -tags=provider ./app/... -v
+            CONSUMER_TAGS: ${{ github.event.inputs.consumerTags }}
+            PROVIDER_BRANCH: ${{ env.BRANCH_NAME }}
+            PACT_BROKER_BASE_URL: $BROKER_URL
+            PACT_BROKER_TOKEN: $BROKER_TOKEN
+        run: echo ${{ github.event.inputs.message }} && go clean -testcache && go test -tags=provider ./app/... -v

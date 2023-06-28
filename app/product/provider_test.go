@@ -1,11 +1,10 @@
-//go:build provider
-
 package product_test
 
 import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 
 	"github.com/brianvoe/gofakeit"
 	"github.com/pact-cdc-example/product-service/app/product"
@@ -38,12 +37,17 @@ type PactSettings struct {
 	BrokerToken     string
 	ConsumerName    string
 	ConsumerVersion string // a git sha, semantic version number
-	ConsumerTag     string // dev, staging, prod
+	ConsumerTags    string // dev, staging, prod
 	ProviderVersion string
+	ProviderBranch  string
 }
 
 func (s *PactSettings) getPactURL() string {
 	var pactURL string
+
+	if pactURL = os.Getenv("PACT_URL"); pactURL != "" {
+		return pactURL
+	}
 
 	if s.ConsumerVersion == "" {
 		pactURL = fmt.Sprintf("%s/pacts/provider/%s/consumer/%s/latest/master.json", s.BrokerBaseURL, s.ProviderName, s.ConsumerName)
@@ -103,11 +107,6 @@ func (s *ProviderTestSuite) SetupSuite() {
 			fmt.Println("serverErr", serverErr)
 		}
 	}()
-	//
-	//_ = os.Setenv("CONSUMER_NAME", "BasketService")
-	//_ = os.Setenv("CONSUMER_TAG", "dev")
-	//_ = os.Setenv("GIT_SHORT_HASH", uuid.New().String())
-	//_ = os.Setenv("CONSUMER_VERSION", "0.0.1")
 
 	pactBrokerBaseURL := pactBrokerLocalURL
 	if os.Getenv("CI") == "true" {
@@ -120,8 +119,9 @@ func (s *ProviderTestSuite) SetupSuite() {
 		ConsumerName:    os.Getenv("CONSUMER_NAME"),
 		ConsumerVersion: os.Getenv("CONSUMER_VERSION"),
 		BrokerBaseURL:   pactBrokerBaseURL,
-		ConsumerTag:     os.Getenv("CONSUMER_TAG"),
+		ConsumerTags:    os.Getenv("CONSUMER_TAGS"),
 		ProviderVersion: os.Getenv("PROVIDER_VERSION"),
+		ProviderBranch:  os.Getenv("PROVIDER_BRANCH"),
 		BrokerToken:     os.Getenv("PACT_BROKER_TOKEN"),
 	}
 
@@ -140,9 +140,10 @@ func (s *ProviderTestSuite) TestProvider() {
 
 	verifyRequest := types.VerifyRequest{
 		ProviderBaseURL:            providerBaseURL,
+		ProviderBranch:             s.pactSettings.ProviderVersion,
 		PactURLs:                   []string{s.pactSettings.getPactURL()},
 		BrokerURL:                  s.pactSettings.BrokerBaseURL,
-		Tags:                       []string{s.pactSettings.ConsumerTag},
+		Tags:                       strings.Split(s.pactSettings.ConsumerTags, ","),
 		BrokerUsername:             s.pactSettings.BrokerUsername,
 		BrokerPassword:             s.pactSettings.BrokerPassword,
 		BrokerToken:                s.pactSettings.BrokerToken,
