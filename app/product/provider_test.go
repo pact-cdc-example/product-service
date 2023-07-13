@@ -157,7 +157,6 @@ func (s *ProviderTestSuite) TestProvider() {
 			"i get body parser error when no product id is given":                                 s.iGetBodyParserErrorWhenNoProductIDIsGivenStateHandler,
 			"i get product not found error when the one of product with given id does not exists": s.iGetProductNotFoundErrorWhenTheOneOfProductWithGivenIDDoesNotExistsStateHandler,
 			/*	"i get products with given ids":                                                       s.iGetProductsWithGivenIDsStateHandler,*/
-
 		},
 	}
 
@@ -214,31 +213,6 @@ func (s *ProviderTestSuite) iGetProductsWithGivenIDsStateHandler() error {
 
 	return nil
 }
-
-/*
-func createProductTableOnDB(sql *sql.DB) error {
-	_, err := sql.Exec(`
-		CREATE TABLE IF NOT EXISTS products (
-			id VARCHAR(255) NOT NULL PRIMARY KEY,
-			name VARCHAR(255) NOT NULL,
-			price NUMERIC(10,2) NOT NULL,
-		    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-		    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
-		    buying_price NUMERIC(10,2) NOT NULL,
-		    selling_price NUMERIC(10,2) NOT NULL,
-		    image_url VARCHAR(255) NOT NULL,
-		    type VARCHAR(255) NOT NULL,
-		    provider VARCHAR(255) NOT NULL,
-		    creator VARCHAR(255) NOT NULL,
-		    distributor VARCHAR(255) NOT NULL,
-		    code VARCHAR(255) NOT NULL,
-		    color VARCHAR(255) NOT NULL
-		);
-	`)
-
-	return err
-}
-*/
 
 func randomProduct(id string) *product.Product {
 	if id == "" {
